@@ -1,0 +1,37 @@
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var Article = require('./articleModel');
+var bodyParser = require('body-parser');
+
+// initialize connection to MongoDB
+mongoose.connect(`mongodb://mindmapper:mindmapper@ds043037.mongolab.com:43037/heroku_twqbdjdr`);
+mongoose.connection.once('open', function() {
+  console.log('Mindmapper DB Connection Activated...');
+});
+
+var mapperController = {};
+mapperController.createArticle = createArticle;
+mapperController.findAllArticles = findAllArticles;
+
+function findAllArticles(req,res,next) {
+  Article.find({}, function(err,result) {
+    if (err) console.log(err);
+    res.send(result);
+    next();
+  });
+}
+
+function createArticle(req,res,next) {
+  console.log('Saving URL...')
+  Article.create({
+    url: req.body._url,
+    email: req.body.email
+  }, function(err, result) {
+    if (err) console.log(err);
+    console.log(`New article created!`);
+    res.send(result);
+    next();
+  });
+}
+
+module.exports = mapperController;
